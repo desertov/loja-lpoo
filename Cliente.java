@@ -5,6 +5,7 @@ public class Cliente extends Pessoa{
 	public Cliente(String nome, String rg, String cpf, String telefonefixo, String celular) throws NullException, HugeNameException, PhoneException, InvalidCpfFormatException {
 		super(nome, rg, cpf, telefonefixo, celular);
 	}
+
 	
 	@Override
 	public void cadastro(Pessoa p) {

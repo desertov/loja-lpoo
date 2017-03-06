@@ -3,11 +3,11 @@ package pessoa;
 import banco.Conexao;
 
 public abstract class Pessoa extends Conexao implements ReadyObject{
-	private String nome;
-	protected String rg;
-	protected String cpf;
-	private String telefonefixo;
-	private String celular;
+	public String nome;
+	public String rg;
+	public String cpf;
+	public String telefonefixo;
+	public String celular;
 	
 	public Pessoa(String nome, String rg, String cpf, String telefonefixo, String celular) throws NullException, HugeNameException, PhoneException, InvalidCpfFormatException {
 		setNome(nome);
@@ -16,6 +16,7 @@ public abstract class Pessoa extends Conexao implements ReadyObject{
 		setTelefonefixo(telefonefixo);
 		setCelular(celular);
 	}
+	
 
 	public String getNome() {
 		return nome;
@@ -50,7 +51,7 @@ public abstract class Pessoa extends Conexao implements ReadyObject{
 
 	public void setTelefonefixo(String telefonefixo) throws PhoneException {
 		if(nulaOuEmBranco(telefonefixo)||nulaOuVazia(telefonefixo))
-			this.telefonefixo = telefonefixo;
+			this.telefonefixo = null;
 		else if(telefonefixo.length() != 13)
 			throw new PhoneException("Telefone Fixo", "(YY)YYYY-YYYY");
 		else if(telefonefixo.charAt(0) != '(' && telefonefixo.charAt(3) != ')' && telefonefixo.charAt(8) != '-')
