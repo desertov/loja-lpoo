@@ -2,8 +2,6 @@ package pessoa;
 
 public class Vendedor extends Funcionario{
 
-	private Cliente cliente;//Para fazer uso do método setCpf
-
 	public Vendedor(String nome, String rg, String cpf, String telefonefixo, String celular, Integer id, String senha) 
 			throws NullException, HugeNameException, PhoneException, InvalidCpfFormatException {
 		super(nome, rg, cpf, telefonefixo, celular, id, senha);
@@ -41,5 +39,7 @@ public class Vendedor extends Funcionario{
 			else
 				super.cpf = cpf;
 	}
+
+	
 
 }

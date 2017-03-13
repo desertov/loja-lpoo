@@ -1,26 +1,31 @@
 package pessoa;
 
-import banco.Conexao;
+import banco.BancoDeDados;
 
-public abstract class Pessoa extends Conexao implements ReadyObject{
+public abstract class Pessoa extends BancoDeDados implements ReadyObject{
+	
 	public String nome;
+	
 	public String rg;
 	public String cpf;
 	public String telefonefixo;
 	public String celular;
 	
+	
+	/*ArrayList<Presente> presentes;
+	
+	public ArrayList<Presente> getPresentes() {
+		presentes = .celular..
+	}*/
+	
 	public Pessoa(String nome, String rg, String cpf, String telefonefixo, String celular) throws NullException, HugeNameException, PhoneException, InvalidCpfFormatException {
 		setNome(nome);
 		setRg(rg);
-		setCpf(cpf);;
+		setCpf(cpf);
 		setTelefonefixo(telefonefixo);
 		setCelular(celular);
 	}
 	
-
-	public String getNome() {
-		return nome;
-	}
 
 	public void setNome(String nome) throws NullException, HugeNameException{
 		if(nulaOuEmBranco(nome)||nulaOuVazia(nome))
@@ -31,6 +36,10 @@ public abstract class Pessoa extends Conexao implements ReadyObject{
 			this.nome = nome;
 	}
 
+	public String getNome(){
+		return nome;
+	}
+	
 	public String getRg() {
 		return rg;
 	}

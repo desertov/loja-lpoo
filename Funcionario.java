@@ -1,6 +1,6 @@
 package pessoa;
 
-public abstract class Funcionario extends Pessoa{
+public abstract class Funcionario extends Pessoa implements Autenticavel{
 	private Integer id;
 	private String senha;
 	
@@ -41,6 +41,13 @@ public abstract class Funcionario extends Pessoa{
 			throw new NullException("Senha");
 		else
 			this.senha = senha;
+	}
+
+	public boolean login(Integer id, String senha) {
+		if(id == getId() && senha == getSenha()){
+			return true; 
+		}
+		return false;
 	}
 
 

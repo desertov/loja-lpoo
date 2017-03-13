@@ -38,5 +38,7 @@ public class Gerente extends Funcionario{
 			else
 				super.cpf = cpf;
 	}
+	
+
 
 }
