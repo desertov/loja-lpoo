@@ -57,6 +57,7 @@ public class BancoDeDados{
 		
 		
 	public void cadastroDePessoa(Pessoa p) {//O que está comentado nesse método, também produz o mesmo efeito;
+		conecta();
 		if(p instanceof Cliente){
 		String sql = "INSERT INTO Cliente (nome, rg, cpf, telefonefixo, celular) VALUES ('" + p.getNome() + "', '" + p.getRg() + "', '" + p.getCpf()+"', '"+p.getTelefonefixo()+"', '"+p.getCelular()+"');";
 			//String sql = "INSERT INTO Cliente (nome, rg, cpf, telefonefixo, celular) VALUES (?, ?, ?, ?, ?)";
@@ -106,6 +107,14 @@ public class BancoDeDados{
 	
 	
 	public void cadastroDePresentes(Produtos pro) throws SQLException{
+		conecta();
+		String query = "INSERT INTO estoque (nome, quantidade, id) VALUES (?, ?, ?)";
+		PreparedStatement ps0 = con.prepareStatement(query);
+		ps0.setString(1, pro.getNome());
+		ps0.setInt(2, pro.getQuantidade());
+		ps0.setInt(3, pro.getId());
+		ps0.executeUpdate();
+		
 		if(pro instanceof Acessorios){
 			String sql = "INSERT INTO acessorios (nome, descricao, precocusto, percentlucro, quantidade, id) VALUES (?, ?, ?, ?, ?, ?)";
 			PreparedStatement ps = con.prepareStatement(sql);
