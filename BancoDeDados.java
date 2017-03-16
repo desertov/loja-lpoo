@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.lang.String;
+import java.util.ArrayList;
 
 import pessoa.Cliente;
 import pessoa.Gerente;
@@ -14,14 +14,22 @@ import pessoa.Pessoa;
 import pessoa.Vendedor;
 import produto.Acessorios;
 import produto.Cosmeticos;
+import produto.Estoque;
 import produto.Perfumaria;
 import produto.Produtos;
 
 public class BancoDeDados{
-	private Connection con = null;
-	private Statement statement = null;
-	private ResultSet resultSet = null;
-	public void conecta() {
+	public static Connection con = null;
+	public static Statement statement = null;
+	public static ResultSet resultSet = null;
+	public static ArrayList<String> name = new ArrayList<String>();
+	public static ArrayList<Integer> quant = new ArrayList<Integer>();
+	public static ArrayList<Integer> identify = new ArrayList<Integer>();
+	
+	public static  ArrayList<Estoque> estoqueArray = new ArrayList<Estoque>();
+	
+	
+	public static void conecta() {
 		try {
 			String url = "jdbc:postgresql://localhost/loja";
 			String usuario = "thayna";
@@ -40,6 +48,14 @@ public class BancoDeDados{
 
 	}//fim do método conecta
 	
+	public void desconecta(){
+		try {
+			this.con.close();
+		} catch (SQLException e) {
+			System.out.println("Erro: " + e.getMessage());
+		}
+	}
+	
 	public String listarCliente(String cpf) throws SQLException {
 		String sql = "SELECT * FROM Cliente WHERE cpf = ";
 
@@ -54,6 +70,29 @@ public class BancoDeDados{
 		rs.getString(0); // rs.getString("cpf");
 	}*/ //Percorre a coluna
 	}	
+	
+	public static ArrayList<Estoque> listarEstoque() throws SQLException{
+		try{
+			conecta();
+		
+		String query = "SELECT * FROM estoque ORDER BY id";
+		PreparedStatement ps = con.prepareStatement(query);
+		ResultSet rs = ps.executeQuery();
+
+			while(rs.next()){
+				String name = rs.getString("nome");	
+				int quant = rs.getInt("quantidade");
+				int identify = rs.getInt("id");
+				Estoque estocado = new Estoque(name, quant, identify);
+				estoqueArray.add(estocado);
+			}
+			return estoqueArray;
+		} catch(Exception e){
+			throw new SQLException();
+			
+		}
+		
+	}
 		
 		
 	public void cadastroDePessoa(Pessoa p) {//O que está comentado nesse método, também produz o mesmo efeito;

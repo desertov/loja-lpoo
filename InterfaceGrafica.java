@@ -3,22 +3,31 @@ package graphics;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.TextField;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListModel;
 
+import banco.BancoDeDados;
 import pessoa.Cliente;
 import pessoa.Pessoa;
 import produto.Acessorios;
 import produto.Cosmeticos;
 import produto.Perfumaria;
 import produto.Produtos;
+import produto.Estoque;
 
 public class InterfaceGrafica extends JFrame{
 		
@@ -36,7 +45,7 @@ public class InterfaceGrafica extends JFrame{
 	private JMenuItem cosmetico1;
 	private JMenuItem perfumaria1;
 	
-	private JButton add;
+	private JButton add = new JButton("Adicionar");
 	
 	private TextField nomeField;
 	private TextField rgField;
@@ -50,14 +59,20 @@ public class InterfaceGrafica extends JFrame{
 	private TextField quantidadeField;
 	private TextField idField;
 	
-	private JLabel nomeLabel;
+	private JLabel nomeLabel;//DECIDIR SE É GLOBAL
+	
+	private JTable myTable;
+	private JScrollPane scroll;
+	
+	private ArrayList<Estoque> estocado = new ArrayList<Estoque>();
 	
 	private String nome, rg, cpf, telefonefixo, celular;
-	private String descricao;
-	private double precoCusto, porcentagem;
-	private int quantidade, id;
+	private String descricao, precoCusto, porcentagem, quantidade, id;
+
 	private Cliente cli;
 	private Acessorios acessorio;
+	
+	private boolean complete;
 	
 	public InterfaceGrafica(){
 		super("Loja de Presentes");
@@ -120,117 +135,164 @@ public class InterfaceGrafica extends JFrame{
 		search.add(produto3);
 		list.add(estoque);
 		list.add(debito);
+		
+		createListeners();
+	}
 	
-			
+	private void createListeners(){		
 		cliente.addActionListener(e-> {
-			JLabel nomeLabel = new JLabel("Nome");
-			JLabel rgLabel = new JLabel("RG");
-			JLabel cpfLabel = new JLabel("CPF");
-			JLabel telefoneFixoLabel = new JLabel("Telefone Fixo");
-			JLabel celularLabel = new JLabel("Celular");
-			nomeField = new TextField(32);
-			rgField = new TextField(32);
-			cpfField = new TextField(32);
-			telefonefixoField = new TextField(32);
-			celularField = new TextField(32);
-				
-			middle.removeAll();
-			setSize(296, 400);
-			middle.add(nomeLabel);
-			middle.add(nomeField);		
-			middle.add(rgLabel);
-			middle.add(rgField);	
-			middle.add(cpfLabel);
-			middle.add(cpfField);	
-			middle.add(telefoneFixoLabel);
-			middle.add(telefonefixoField);		
-			middle.add(celularLabel);
-			middle.add(celularField);
-			
 			label.setText("Adicionando um cliente");
 			
-			
-			
-			adicionarCliente();
+			clienteTexto();
+			add.addActionListener(e1->{
+				getCliente();
+				try {
+					Pessoa cli = new Cliente(nome,rg,cpf,telefonefixo,celular);
+					cli.cadastro(cli);
+					JOptionPane.showMessageDialog(null, "Cadastro feito com sucesso!");
+				} catch (Exception e2) {
+					JOptionPane.showMessageDialog(null, e2.getMessage() + "\nTente novamente.","Erro",JOptionPane.WARNING_MESSAGE);
+				}finally{
+					middle.removeAll();
+					setSize(295, 400);
+					label.setText("Status");
+				}
+				
+			});
+					
 		});
 		
 		acessorio1.addActionListener(e->{
 			label.setText("Adicionando um item acessório");
 			produtoTexto();	
 			add.addActionListener(e1->{
-				getDados();
+				getProduto();
 				try {
 					Produtos pro = new Acessorios(nome, descricao, precoCusto, porcentagem, quantidade, id);
 					pro.cadastroDePresentes(pro);
-					JOptionPane.showMessageDialog(null, "Cadastro feito com sucesso!");
-					middle.removeAll();
+					JOptionPane.showMessageDialog(null, "Cadastro feito com sucesso!");	
 				} catch (Exception e2) {
-					JOptionPane.showMessageDialog(null, e2.getMessage() + "\nEncerre a sessão e tente novamente.","Erro",JOptionPane.WARNING_MESSAGE);
-					e2.printStackTrace();
+					JOptionPane.showMessageDialog(null, e2.getMessage() + "\nTente novamente.","Erro",JOptionPane.WARNING_MESSAGE);
+				}finally{
+					middle.removeAll();
+					setSize(291, 550);
+					label.setText("Status");
 				}
 			});	
-			
 		});
 		cosmetico1.addActionListener(e->{
 			label.setText("Adicionando um item cosmético");
+	
 			produtoTexto();
 			add.addActionListener(e1->{
-				getDados();
+				getProduto();
 				try{
 					Produtos pro = new Cosmeticos(nome, descricao, precoCusto, porcentagem, quantidade, id);
 					pro.cadastroDePresentes(pro);
 					JOptionPane.showMessageDialog(null, "Cadastro feito com sucesso!");
-					middle.removeAll();
 				}catch (Exception e2) {
-					JOptionPane.showMessageDialog(null, e2.getMessage() + "\nEncerre a sessão e tente novamente.","Erro",JOptionPane.WARNING_MESSAGE);
-					e2.printStackTrace();
+					JOptionPane.showMessageDialog(null, e2.getMessage() + "\nTente novamente.","Erro",JOptionPane.WARNING_MESSAGE);
+				}finally{
+					middle.removeAll();
+					setSize(291, 550);
+					label.setText("Status");
 				}
+			
 			});
+	
 		});
 		perfumaria1.addActionListener(e->{
 			label.setText("Adicionando um item da perfumaria");
+	
 			produtoTexto();
 			add.addActionListener(e1->{
-				getDados();
-				try{
+				getProduto();
+				try{	
 					Produtos pro = new Perfumaria(nome, descricao, precoCusto, porcentagem, quantidade, id);
 					pro.cadastroDePresentes(pro);
-					middle.removeAll();
-					middle.remove(add);
-					middle.remove(nomeLabel);
 					JOptionPane.showMessageDialog(null, "Cadastro feito com sucesso!");
-					
 				}catch (Exception e2) {
-					JOptionPane.showMessageDialog(null, e2.getMessage() + "\nEncerre a sessão e tente novamente.","Erro",JOptionPane.WARNING_MESSAGE);
-					e2.printStackTrace();
+					JOptionPane.showMessageDialog(null, e2.getMessage() + "\nTente novamente.","Erro",JOptionPane.WARNING_MESSAGE);
+				}finally{
+					middle.removeAll();
+					setSize(291, 550);	
+					label.setText("Status");
 				}
 			});
+	
+		});
+		
+		estoque.addActionListener(e->{
+			middle.removeAll();
+			setSize(500, 600);
+			if(myTable == null)
+				moveArrayEstoque();
+			String[]column = {"ID", "Nome", "Quantidade"};
+			Object [][] estoque1 = new Object[estocado.size()][3];
+			int line = 0;
+				for(Estoque i:estocado){
+					estoque1[line][0] = i.getId();
+					estoque1[line][1] = i.getNome();
+					estoque1[line][2] = i.getQuantidade();
+					line++;
+				}
+			myTable = new JTable(estoque1, column);
+			scroll = new JScrollPane(myTable);
+			middle.add(scroll);
+			label.setText("Listando estoque");		
 		});
 		
 		
+		
+		}
+	private void moveArrayEstoque(){
+		try {
+			estocado.addAll(BancoDeDados.listarEstoque());
+		} catch (SQLException e1) {
+			JOptionPane.showMessageDialog(null, e1.getMessage() + "\nTente novamente.","Erro",JOptionPane.WARNING_MESSAGE);
+		}
+
+	}
+
+	private void clienteTexto(){
+		nomeLabel = new JLabel("Nome");
+		JLabel rgLabel = new JLabel("RG");
+		JLabel cpfLabel = new JLabel("CPF");
+		JLabel telefoneFixoLabel = new JLabel("Telefone Fixo");
+		JLabel celularLabel = new JLabel("Celular");
+		nomeField = new TextField(32);
+		rgField = new TextField(32);
+		cpfField = new TextField(32);
+		telefonefixoField = new TextField(32);
+		celularField = new TextField(32);
+			
+		middle.removeAll();
+		setSize(296, 400);
+		middle.add(nomeLabel);
+		middle.add(nomeField);		
+		middle.add(rgLabel);
+		middle.add(rgField);	
+		middle.add(cpfLabel);
+		middle.add(cpfField);	
+		middle.add(telefoneFixoLabel);
+		middle.add(telefonefixoField);		
+		middle.add(celularLabel);
+		middle.add(celularField);
+		
+	
+		middle.add(add);
+		
+		
+	}
+		
+	private void getCliente(){
+		nome = nomeField.getText();
+		rg = rgField.getText();
+		cpf = cpfField.getText();
+		telefonefixo = telefonefixoField.getText();
+		celular = celularField.getText();
 	}
 	
-	private void adicionarCliente(){
-		JButton add = new JButton("Adicionar");
-		middle.add(add);
-		add.addActionListener(e->{
-			nome = nomeField.getText();
-			rg = rgField.getText();
-			cpf = cpfField.getText();
-			telefonefixo = telefonefixoField.getText();
-			celular = celularField.getText();
-			try {
-				Pessoa cli = new Cliente(nome,rg,cpf,telefonefixo,celular);
-				cli.cadastro(cli);
-				JOptionPane.showMessageDialog(null, "Cadastro feito com sucesso!");
-				middle.removeAll();
-			} catch (Exception e1) {
-				JOptionPane.showMessageDialog(null, e1.getMessage() + "\nEncerre a sessão e tente novamente.","Erro",JOptionPane.WARNING_MESSAGE);
-			}
-			middle.removeAll();
-		});
-	}
-		
 	
 	private void produtoTexto(){
 		nomeLabel = new JLabel("Nome");
@@ -240,7 +302,7 @@ public class InterfaceGrafica extends JFrame{
 		JLabel quantidadeLabel = new JLabel("Quantidade");
 		JLabel idLabel = new JLabel("ID");
 		
-		add = new JButton("Adicionar");
+		
 		
 		nomeField = new TextField(32);
 		descricaoField = new TextField(32);
@@ -270,12 +332,12 @@ public class InterfaceGrafica extends JFrame{
 				
 		
 	}
-	private void getDados(){
+	private void getProduto(){
 		nome = nomeField.getText();
 		descricao = descricaoField.getText();
-		precoCusto = Double.parseDouble(precoCustoField.getText());
-		porcentagem = Double.parseDouble(porcentagemField.getText());
-		quantidade = Integer.parseInt(quantidadeField.getText());
-		id = Integer.parseInt(idField.getText());
+		precoCusto = precoCustoField.getText();
+		porcentagem = porcentagemField.getText();
+		quantidade = quantidadeField.getText();
+		id = idField.getText();
 	}
 }
