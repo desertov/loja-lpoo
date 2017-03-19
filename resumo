@@ -1,0 +1,57 @@
+1.INTRODUÇÃO
+	Classes e métodos genéricos são meios de assegurar que o tipo passado como parâmetro é o esperado. Além disso, essa segurança do tipo de parâmetro a ser enviado/recebido é chamada segurança de tipos em tempo de compilação e, não à toa o motivo do nome, pois caso um método espera um valor inteiro e lhe é enviado uma String por exemplo, o método emite uma mensagem de erro em tempo de compilação.
+	Os genéricos, como também são chamados os métodos e classes genéricos, permitem um meio de especificar, com uma única declaração de método, um conjunto de métodos relacionados ou, com uma única declaração de classe, um conjunto de tipos relacionados. 
+
+2. DESENVOLVIMENTO
+
+2.1. MÉTODOS GENÉRICOS: IMPLEMENTAÇÃO E TRADUÇÃO EM TEMPO DE COMPILAÇÃO
+	Se as operações realizadas por vários métodos sobrecarregados, ou seja, possuem corpo semelhante mas o tipo não cabe para a implementação, exemplo: três ArrayLists de Float, Double e Integer, cada um, mesmo tendo comportamentos semelhantes, teria de implementar três métodos pois são de  três tipos diferentes, possuindo o mesmo comportamento, podemos implementar de maneira mais compacta e conveniente com um método genérico. Usando o exemplo anterior, chamemos de E o elemento genérico(Float, Double ou Integer), podemos implementar da seguinte forma:
+	//Método para impressão de um ArrayList
+1 public class Generica{
+2	public static void main(String args[]){
+3		Float[] floatArray = {2.2F,3.3F, 4.4F};
+4		Double[] doubleArray = {1.1,2.2,3.3,4.4};
+5		Integer[] integerArray = {1,2,3,4,5,6};
+6		
+7		imprime(floatArray);
+8		imprime(doubleArray);
+9		imprime(integerArray);
+10	}
+11	
+12	public static <E> void imprime(E[] entrada){
+13		for(E i:entrada)
+14			System.out.printf(“%s ”, i); //imprime cada elemento sem importar o tipo
+15		System.out.println();			//pois é um toString implícito
+16	}	
+17 }
+	Todas as declarações de métodos genéricos, assim como o método imprime acima, têm uma seção de parâmetro de tipo delimitada por colchetes angulares(<E>) que precedem o tipo do retorno do método, assim como pode ser observado na linha 12 do trecho de código. Cada seção de parâmetro de tipo tem um ou mais parâmetros de tipos separados por vírgulas. Um parâmetro de tipo é um identificador que especifica um nome genérico do tipo(T é um parâmetro de tipo, substituindo no trecho acima Float, Double e Integer). Os parâmetros de tipo podem ser usados para declarar o tipo de retorno, tipos de parâmetros , tipos de variáveis locais do método genérico e atuam como marcadores de lugar para os tipos de argumentos enviados ao genérico, para o último, conhecido como argumentos de tipos reais. Observe que os parâmetros de tipo podem representar somente tipos por referência. Por isso, no exemplo não foram usados tipos primitivos float, double, int; também observe que os nomes dos parâmetros de tipo por toda a declaração de método devem corresponder àqueles declarados na seção de parâmetro de tipo, veja exemplo acima nas linhas 12 e 13: a variável i é do tipo E (linha 13) que corresponde ao parâmetro de tipo (E) (linha 12).
+	Um parâmetro de tipo pode ser declarado na seção de parâmetro de tipo, mas pode aparecer mais de uma vez na lista de parâmetros do método. Veja no exemplo abaixo que o nome do parâmetro de tipo E aparece duas vezes na lista de parâmetros do método:
+	public static <E> void imprimeDuasListas(E[] entrada1, E[] entrada2)
+Observação: Os nomes de parâmetro de tipo não precisam ser únicos em diferentes métodos genéricos.
+	Quando o compilador traduz o método genérico imprime em bytecodes Java, ele remove a seção de parâmetro de tipo e substitui os parâmetros de tipo por tipos reais cujo processo é conhecido como erasure. Por padrão, todos os tipos genéricos são substituídos pelo tipo Object. Dessa maneira, o método genérico imprime da página 1 na versão compilada após o erasure fica assim:
+
+public static void imprime(Object [] entrada){
+	for(Object i:entrada)
+		System.out.printf(“%s ”, i);
+	System.out.prinln();
+}
+
+2.2.  MÉTODOS QUE USAM UM PARÂMETRO DE TIPO COMO O TIPO DE RETORNO
+	Considere um exemplo de método genérico em que parâmetros de tipo são utilizados como tipo de retorno e na lista de parâmetros. A classe usa um método genérico maximum para determinar e retornar o maior de seus três argumentos do mesmo tipo. Como o operador relacional > (maior que) não pode ser usado com tipos de referência, devemos comparar dois objetos de mesma classe para saber quem é o maior, somente se, esta classe implementar a interface genérica Comparable<T> (pacote java.lang).Todas as classes empacotadoras de tipos primitivos implementam essa interface. As interfaces genéricas permitem que especifiquem, apenas com uma única declaração de interface, um conjunto de tipos relacionados. Objetos Comparable<T> têm um método compareTo, veja a expressão abaixo com dois Integer,: integer1 e integer2
+	integer1.compareTo(integer2)
+Este método retona -1 se integer1 for menor que integer2, 0 se integer1 for igual a integer2 e 1 se integer1 for maior que integer2.
+	No exemplo que verá logo mais abaixo, Comparable é conhecido como o limite superior do parâmetro de tipo. Por default, Object() é o limite superior. Observe que declarações do parâmetro de tipo que limitam o parâmetro sempre utilizam a palavra reservada extends, independentemente do parâmetro de tipo estender de uma classe ou implementar uma interface (como é no caso). Esse parâmetro de tipo é muito mais restritivo que o parâmetro de tipo especificado para o método imprime (da Pág. 1) pois, a restrição ao uso de objetos Comparable<T> é algo importante porque nem todos os objetos podem ser comparados. Entretanto, é garantido que objetos Comparable<T> terão um método compareTo().
+Exemplo2:
+
+public class MaximumTest{
+	public static <T extends Comparable<T> > T maximum(T alfa, T beta, T gama){
+		T max = alfa;
+    
+    if(beta.compareTo(max) > 0)
+      max = beta;
+    if(gama.compareTo(max) > 0)
+      max = gama;
+      
+      return max;
+	}
+}
