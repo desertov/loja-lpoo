@@ -44,14 +44,23 @@ Este método retona -1 se integer1 for menor que integer2, 0 se integer1 for igu
 Exemplo2:
 
 public class MaximumTest{
-	public static <T extends Comparable<T> > T maximum(T alfa, T beta, T gama){
-		T max = alfa;
+    public static <T extends Comparable<T> > T maximum(T alfa, T beta, T gama){
+	T max = alfa;
     
-    if(beta.compareTo(max) > 0)
-      max = beta;
-    if(gama.compareTo(max) > 0)
-      max = gama;
+    	if(beta.compareTo(max) > 0)
+      	    max = beta;
+    	if(gama.compareTo(max) > 0)
+      	    max = gama;
       
-      return max;
-	}
-}
+        return max;
+    }//fim do método maximum
+    
+    public static void main(String args[]){
+    	System.out.println("O maior é " + maximum(3,4,5));
+	System.out.println("O maior é " + maximum(34.1,54.2,32.6));
+	System.out.println("O maior é " + maximum("pera","abacate","laranja"));
+	
+    }//fim da main
+}//fim da classe MaximumTest
+
+
