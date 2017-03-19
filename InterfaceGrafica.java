@@ -23,6 +23,7 @@ import javax.swing.ListModel;
 import banco.BancoDeDados;
 import pessoa.Cliente;
 import pessoa.Pessoa;
+import pessoa.PhoneException;
 import produto.Acessorios;
 import produto.Cosmeticos;
 import produto.Perfumaria;
@@ -46,6 +47,7 @@ public class InterfaceGrafica extends JFrame{
 	private JMenuItem perfumaria1;
 	
 	private JButton add = new JButton("Adicionar");
+	private JButton alt = new JButton("Alterar");
 	
 	private TextField nomeField;
 	private TextField rgField;
@@ -59,6 +61,10 @@ public class InterfaceGrafica extends JFrame{
 	private TextField quantidadeField;
 	private TextField idField;
 	
+	private TextField altera;
+	private TextField valorNovo;
+	private TextField pkey;
+	
 	private JLabel nomeLabel;//DECIDIR SE É GLOBAL
 	
 	private JTable myTable;
@@ -68,7 +74,8 @@ public class InterfaceGrafica extends JFrame{
 	
 	private String nome, rg, cpf, telefonefixo, celular;
 	private String descricao, precoCusto, porcentagem, quantidade, id;
-
+	private String nameField, newValue, cpfCliente;
+	
 	private Cliente cli;
 	private Acessorios acessorio;
 	
@@ -139,30 +146,34 @@ public class InterfaceGrafica extends JFrame{
 		createListeners();
 	}
 	
+	
+	
+	
 	private void createListeners(){		
 		cliente.addActionListener(e-> {
+			if(label.getText().equals("Adicionando um cliente"))
+				setSize(297, 400);
 			label.setText("Adicionando um cliente");
-			
 			clienteTexto();
+			
 			add.addActionListener(e1->{
 				getCliente();
 				try {
 					Pessoa cli = new Cliente(nome,rg,cpf,telefonefixo,celular);
 					cli.cadastro(cli);
 					JOptionPane.showMessageDialog(null, "Cadastro feito com sucesso!");
-				} catch (Exception e2) {
-					JOptionPane.showMessageDialog(null, e2.getMessage() + "\nTente novamente.","Erro",JOptionPane.WARNING_MESSAGE);
-				}finally{
-					middle.removeAll();
 					setSize(295, 400);
 					label.setText("Status");
+				} catch (Exception e2) {
+					JOptionPane.showMessageDialog(null, e2.getMessage() + "\nTente novamente.","Erro",JOptionPane.WARNING_MESSAGE);
 				}
-				
 			});
 					
 		});
 		
 		acessorio1.addActionListener(e->{
+			if(label.getText().equals("Adicionando um item acessório"))
+				setSize(291, 550);
 			label.setText("Adicionando um item acessório");
 			produtoTexto();	
 			add.addActionListener(e1->{
@@ -174,15 +185,16 @@ public class InterfaceGrafica extends JFrame{
 				} catch (Exception e2) {
 					JOptionPane.showMessageDialog(null, e2.getMessage() + "\nTente novamente.","Erro",JOptionPane.WARNING_MESSAGE);
 				}finally{
-					middle.removeAll();
+					//middle.removeAll();
 					setSize(291, 550);
 					label.setText("Status");
 				}
 			});	
 		});
 		cosmetico1.addActionListener(e->{
+			if(label.getText().equals("Adicionando um item cosmético"))
+				setSize(291, 550);
 			label.setText("Adicionando um item cosmético");
-	
 			produtoTexto();
 			add.addActionListener(e1->{
 				getProduto();
@@ -202,6 +214,8 @@ public class InterfaceGrafica extends JFrame{
 	
 		});
 		perfumaria1.addActionListener(e->{
+			if(label.getText().equals("Adicionando um item da perfumaria"))
+				setSize(291, 550);
 			label.setText("Adicionando um item da perfumaria");
 	
 			produtoTexto();
@@ -223,6 +237,8 @@ public class InterfaceGrafica extends JFrame{
 		});
 		
 		estoque.addActionListener(e->{
+			if(label.getText().equals("Listando estoque"))
+				setSize(501, 600);
 			middle.removeAll();
 			setSize(500, 600);
 			if(myTable == null)
@@ -242,9 +258,62 @@ public class InterfaceGrafica extends JFrame{
 			label.setText("Listando estoque");		
 		});
 		
-		
+		cliente2.addActionListener(e->{
+			if(label.getText().equals("Alterando um campo de um cliente"))
+				setSize(291, 400);
+			editarClienteText();
+			alt.addActionListener(e1->{
+				try {
+					getClienteEdit();
+					System.out.println(nameField + " "+newValue +" "+ cpfCliente);
+					
+					
+					BancoDeDados.editarCliente(nameField, newValue, cpfCliente);
+					JOptionPane.showMessageDialog(null, "Alterado com sucesso!");
+					middle.removeAll();
+					setSize(291, 400);	
+					label.setText("Status");
+				} catch (Exception e2) {
+					e2.printStackTrace();
+					JOptionPane.showMessageDialog(null, e2.getMessage(), "Erro", JOptionPane.WARNING_MESSAGE);
+				}
+			});
+	
+		});
 		
 		}
+	
+	private void getClienteEdit(){
+		nameField = altera.getText();
+		newValue = valorNovo.getText();
+		cpfCliente = pkey.getText();
+	}
+		
+	private void editarClienteText(){
+		JLabel alteraLabel = new JLabel("Campo a ser alterado");
+		JLabel valorNovoLabel = new JLabel("Novo valor");
+		JLabel pkeyLabel = new JLabel("CPF do cliente");
+		
+		altera = new TextField(32);
+		valorNovo = new TextField(32);
+		pkey = new TextField(32);
+	
+		setSize(290, 400);
+		middle.removeAll();
+		label.setText("Alterando um campo de um cliente");
+		middle.add(alteraLabel);
+		middle.add(altera);
+		middle.add(valorNovoLabel);
+		middle.add(valorNovo);
+		middle.add(pkeyLabel);
+		middle.add(pkey);
+		
+		middle.add(alt);
+		
+	}
+	
+	
+	
 	private void moveArrayEstoque(){
 		try {
 			estocado.addAll(BancoDeDados.listarEstoque());
@@ -265,7 +334,8 @@ public class InterfaceGrafica extends JFrame{
 		cpfField = new TextField(32);
 		telefonefixoField = new TextField(32);
 		celularField = new TextField(32);
-			
+		
+		
 		middle.removeAll();
 		setSize(296, 400);
 		middle.add(nomeLabel);
@@ -291,6 +361,8 @@ public class InterfaceGrafica extends JFrame{
 		cpf = cpfField.getText();
 		telefonefixo = telefonefixoField.getText();
 		celular = celularField.getText();
+		
+		System.out.println(nome);
 	}
 	
 	

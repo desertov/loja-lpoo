@@ -8,11 +8,18 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import pessoa.Cliente;
 import pessoa.Gerente;
+import pessoa.HugeNameException;
+import pessoa.NullException;
 import pessoa.Pessoa;
+import pessoa.PhoneException;
 import pessoa.Vendedor;
+
 import produto.Acessorios;
+import produto.Alphabetic;
 import produto.Cosmeticos;
 import produto.Estoque;
 import produto.Perfumaria;
@@ -22,9 +29,6 @@ public class BancoDeDados{
 	public static Connection con = null;
 	public static Statement statement = null;
 	public static ResultSet resultSet = null;
-	public static ArrayList<String> name = new ArrayList<String>();
-	public static ArrayList<Integer> quant = new ArrayList<Integer>();
-	public static ArrayList<Integer> identify = new ArrayList<Integer>();
 	
 	public static  ArrayList<Estoque> estoqueArray = new ArrayList<Estoque>();
 	
@@ -48,9 +52,9 @@ public class BancoDeDados{
 
 	}//fim do método conecta
 	
-	public void desconecta(){
+	public static void desconecta(){
 		try {
-			this.con.close();
+			con.close();
 		} catch (SQLException e) {
 			System.out.println("Erro: " + e.getMessage());
 		}
@@ -93,7 +97,69 @@ public class BancoDeDados{
 		}
 		
 	}
+	
+	public static void editarCliente(String altera, String novo, String p_key) throws PhoneException, NullException, HugeNameException, Alphabetic{
+		conecta();
+		altera.toLowerCase();
+		Pessoa p;
 		
+		if(altera.equals("nome")){
+			String query = "UPDATE cliente SET nome = ? WHERE cpf = ?";
+			PreparedStatement ps;
+			try {
+				
+				ps = con.prepareStatement(query);
+				ps.setString(1, novo);
+				ps.setString(2, p_key);
+				p.setNome(novo);
+			    ps.executeUpdate();
+			} catch (SQLException e) {
+				JOptionPane.showMessageDialog(null, "Nome inválido", "Erro", JOptionPane.WARNING_MESSAGE);
+			}			
+		}
+		else if(altera.equals("rg")){
+			String query = "UPDATE cliente SET rg = ? WHERE cpf = ?";
+			PreparedStatement ps;
+			try {
+				ps = con.prepareStatement(query);
+				ps.setString(1, novo);
+				ps.setString(2, p_key);
+			    ps.executeUpdate();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		else if(altera.equals("telefonefixo")|| altera.equals("telefone fixo"))  {
+			String query = "UPDATE cliente SET telefonefixo = ? WHERE cpf = ?";
+			PreparedStatement ps;
+			try {
+				ps = con.prepareStatement(query);
+				ps.setString(1, novo);
+				ps.setString(2, p_key);
+				Pessoa.setTelefonefixo(novo);
+			    ps.executeUpdate();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}	
+		}
+		else if(altera.equals("celular"))  {
+			String query = "UPDATE cliente SET celular = ? WHERE cpf = ?";
+			PreparedStatement ps;
+			try {
+				ps = con.prepareStatement(query);
+				ps.setString(1, novo);
+				ps.setString(2, p_key);
+				Pessoa.setCelular(novo);
+			    ps.executeUpdate();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		else
+			JOptionPane.showMessageDialog(null, "Campo não encontrado", "Erro", JOptionPane.WARNING_MESSAGE);
+	}
+	
+	
 		
 	public void cadastroDePessoa(Pessoa p) {//O que está comentado nesse método, também produz o mesmo efeito;
 		conecta();
