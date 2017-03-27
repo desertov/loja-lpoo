@@ -1,9 +1,13 @@
 package graphics;
 
+import banco.BancoDeDados;
+
 public class View {
 
 	public static void main(String[] args) {
-		InterfaceGrafica grafica = new InterfaceGrafica();
+		BancoDeDados database = new BancoDeDados();
+		InterfaceGrafica grafica = new InterfaceGrafica(database);
+		grafica.setLocationRelativeTo(null);
 		grafica.setVisible(true);
 
 	}
